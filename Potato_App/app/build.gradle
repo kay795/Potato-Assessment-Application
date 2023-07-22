@@ -43,7 +43,7 @@ android {
 
         // give path to python.exe file in system
         python{
-            buildPython "C:/Users/aglen/AppData/Local/Programs/Python/Python38/python.exe"
+            buildPython "C:/Users/kesevan.veloo/AppData/Local/Programs/Python/Python38/python.exe"
         }
 
     }

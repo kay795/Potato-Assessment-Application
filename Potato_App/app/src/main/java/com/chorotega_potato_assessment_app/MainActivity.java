@@ -92,7 +92,6 @@ import java.util.List;
 
 
 
-
 //implements SharedPreferences.OnSharedPreferenceChangeListener was suggested but gave errors
 public class MainActivity extends AppCompatActivity  {
     //Access Gallery
@@ -443,7 +442,7 @@ public class MainActivity extends AppCompatActivity  {
             iv.setImageURI(imageData);
         }
         //added for camera functionality
-        else if(requestCode == 100 && resultCode == RESULT_OK && data != null)
+        else if(requestCode == 100 && resultCode == RESULT_OK && imageUri != null)
         {
             switch (requestCode) {
 
