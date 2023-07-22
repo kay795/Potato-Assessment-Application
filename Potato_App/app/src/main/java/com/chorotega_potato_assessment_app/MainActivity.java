@@ -252,7 +252,16 @@ public class MainActivity extends AppCompatActivity  {
                 else {
                     obj = pyo.callAttr("main", imageBytes, coinType).asList();
                 }
-                Float dataValues[][]=obj.get(0).toJava(Float[][].class);
+
+                // If there is no data, show an error and return
+                Float dataValues[][];
+                try {
+                    dataValues = obj.get(0).toJava(Float[][].class);
+                } catch(Exception e) {
+                    Toast.makeText(context, "No Tubers Detected", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 String taterNum = obj.get(1).toJava(String.class);
                 String minRatio = obj.get(2).toJava(String.class);
                 String maxRatio = obj.get(3).toJava(String.class);
