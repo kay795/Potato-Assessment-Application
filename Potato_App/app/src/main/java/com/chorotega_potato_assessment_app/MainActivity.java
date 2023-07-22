@@ -210,11 +210,16 @@ public class MainActivity extends AppCompatActivity  {
         SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(this);//pulls the info from settings
 
 
-
+        // Go button listener
         btn.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)//added for the datastorage call
             @Override
             public void onClick(View v) {
+                // Return if there is no image to analyze
+                if (imageUri == null) {
+                    Toast.makeText(context, "Select an image", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 toast.show();
 
                 drawable = (BitmapDrawable)iv.getDrawable();
