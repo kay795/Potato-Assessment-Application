@@ -215,14 +215,15 @@ public class MainActivity extends AppCompatActivity  {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)//added for the datastorage call
             @Override
             public void onClick(View v) {
+                drawable = (BitmapDrawable)iv.getDrawable();
+
                 // Return if there is no image to analyze
-                if (imageUri == null) {
+                if (imageUri == null && drawable == null) {
                     Toast.makeText(context, "Select an image", Toast.LENGTH_LONG).show();
                     return;
                 }
-                toast.show();
 
-                drawable = (BitmapDrawable)iv.getDrawable();
+                toast.show();
                 Bitmap bitmap = Bitmap.createBitmap(drawable.getBitmap());
 
                 String coinType=sharedPreferences.getString("Coin_Type","Quarter");//The settings are pulled on process run
@@ -557,9 +558,13 @@ public class MainActivity extends AppCompatActivity  {
         Log.v("DATA", "File Name: "+fileName);
 
         File file = new File(myDir,fileName);
-        File userFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath(),fileName);//this file should be the one that is written out so the user can access it
-        //The aboveline throws a fit about the API, ignore this for now
 
+        // Find the user store
+        File userDocs = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File userFile = new File(userDocs, fileName);
+
+        // Ensure the user writable location exists
+        userFile.mkdirs();
 
         if(file.exists()){file.delete();}//we will likely implement some sort of duplication in the future, for now lets just erase old stuff
         if(userFile.exists()){userFile.delete();}
@@ -571,6 +576,7 @@ public class MainActivity extends AppCompatActivity  {
             FileWriter out = new FileWriter(file);
             out.write(numTater+newLine+minRatio+newLine+maxRatio+newLine+avgRatio+newLine+coinType+newLine);
             //FileOutputStream fos =new FileOutputStream(userFile); gonna try filewriter first
+
             FileWriter userOut=new FileWriter(userFile);
             userOut.write(numTater+newLine+minRatio+newLine+maxRatio+newLine+avgRatio+newLine+coinType+newLine);
 
