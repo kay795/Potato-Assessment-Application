@@ -7,11 +7,13 @@ import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.os.Environment;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,9 +56,9 @@ public class DisplayHistoryActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("History: "+ neutralName);
         String root =this.getFilesDir().toString();
         File imageDir = new File(root+"/saved_images");
-        File dataDir= new File(root+"/saved_data");
         File imageFile=new File(imageDir,imageName);
-        File dataFile=new File(dataDir,dataName);
+        File dataDir = new File(root+"/saved_data");
+        File dataFile = new File(dataDir, dataName);
 
         imageView.setImageURI(Uri.fromFile(imageFile));
 
@@ -137,7 +139,7 @@ public class DisplayHistoryActivity extends AppCompatActivity {
             BufferedReader reader = new BufferedReader(new FileReader(dataFile));
             String line = reader.readLine();
             String numTubers=line;
-            TableRow[] tr_tater = new TableRow[Integer.parseInt(numTubers)];//How many rows
+            TableRow[] tr_tater = new TableRow[(int)Double.parseDouble(numTubers.trim())];//How many rows
 
 
             while(line!=null){
