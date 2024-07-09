@@ -18,7 +18,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.renderscript.Sampler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -40,56 +39,26 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.CAMERA;
-
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 
 
 //implements SharedPreferences.OnSharedPreferenceChangeListener was suggested but gave errors
@@ -100,6 +69,9 @@ public class MainActivity extends AppCompatActivity  {
     private static final int GALLERY_REQUEST_CODE = 123;
     private static final int REQUEST_IMAGE_CAPTURE = 101;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
+    private static final int REQUEST_CODE_STORAGE_PERMISSION = 122;
+
+    private final Map<Integer, PermissionCallback> permissionCallbacks = new HashMap<>(); // Store callbacks for each request
 
     android.widget.ImageButton btn, btnPick, rstBtn, photoButton;
     android.widget.ImageView iv, iv2;
@@ -109,6 +81,10 @@ public class MainActivity extends AppCompatActivity  {
     android.graphics.Bitmap bitmap;
     String imageString="";
     Uri imageUri;
+
+    private boolean hasPermission(String permission) {
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,39 +116,27 @@ public class MainActivity extends AppCompatActivity  {
         text4 = findViewById(R.id.avg);
         ContentValues values = new ContentValues();
 
+        if (!hasPermission(WRITE_EXTERNAL_STORAGE)) {
+            requestPermission(WRITE_EXTERNAL_STORAGE, REQUEST_CODE_STORAGE_PERMISSION, new PermissionCallback() {
+                @Override
+                public void onPermissionGranted() {
+                    // Permission granted after request
+                }
 
-        //Check for camera permissions
-        if (ContextCompat.checkSelfPermission(MainActivity.this, CAMERA) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]
-                            {
-                                    Manifest.permission.CAMERA
-                            }, 100);
-        }
-
-        //Check for external storage
-        if (ContextCompat.checkSelfPermission(MainActivity.this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]
-                            {
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            }, 100);
+                @Override
+                public void onPermissionDenied() {
+                    // Permission denied, handle user rejection
+                    Toast.makeText(MainActivity.this, "Storage permission is required to save the results", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         //OnClickListener Camera button
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageUri = getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, 100);
+                // check for camera permission
+                checkCameraPermissionAndRequest(values);
             }
         });
 
@@ -414,6 +378,57 @@ public class MainActivity extends AppCompatActivity  {
             }
 
         });
+    }
+
+    private void checkCameraPermissionAndRequest(ContentValues values) {
+        if (!hasPermission(CAMERA)) {
+            requestPermission(CAMERA, MY_CAMERA_PERMISSION_CODE, new PermissionCallback() {
+                @Override
+                public void onPermissionGranted() {
+                    // Permission granted after request
+                    imageUri = getContentResolver().insert(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                    values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                    values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(intent, 100);
+                }
+
+                @Override
+                public void onPermissionDenied() {
+                    // Permission denied, handle user rejection
+                    Toast.makeText(MainActivity.this, "Camera permission is required to take pictures", Toast.LENGTH_SHORT).show();
+                }
+
+            });
+        }
+    }
+
+    private void requestPermission(String permission, int requestCode, PermissionCallback callback) {
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]
+                        {
+                                permission
+                        }, requestCode);
+        permissionCallbacks.put(requestCode, callback); // Store callback for later use
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionCallback callback = permissionCallbacks.remove(requestCode); // Remove used callback
+        if (callback != null) {
+            // Permission request for storage access
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, proceed with storage operations
+                callback.onPermissionGranted();
+            } else {
+                // Permission denied, handle user rejection
+                callback.onPermissionDenied();
+            }
+        }
     }
 
     //This generates the little bubble when the settings button is pushed

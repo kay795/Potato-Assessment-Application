@@ -3,7 +3,7 @@
     package="com.chorotega_potato_assessment_app">
 
     <uses-feature
-        android:name="android.hardware.Camera"
+        android:name="android.hardware.camera"
         android:required="true"
         />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
