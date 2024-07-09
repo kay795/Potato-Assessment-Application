@@ -4,8 +4,8 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 33
+    buildToolsVersion "33.0.0"
 
     defaultConfig {
         applicationId "com.chorotega_potato_assessment_app"
@@ -31,7 +31,7 @@ android {
             }
         }
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
 
