@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity  {
     private static final int GALLERY_REQUEST_CODE = 123;
     private static final int REQUEST_IMAGE_CAPTURE = 101;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
-    private static final int REQUEST_CODE_STORAGE_PERMISSION = 122;
 
     private final Map<Integer, PermissionCallback> permissionCallbacks = new HashMap<>(); // Store callbacks for each request
 
@@ -116,27 +116,28 @@ public class MainActivity extends AppCompatActivity  {
         text4 = findViewById(R.id.avg);
         ContentValues values = new ContentValues();
 
-        if (!hasPermission(WRITE_EXTERNAL_STORAGE)) {
-            requestPermission(WRITE_EXTERNAL_STORAGE, REQUEST_CODE_STORAGE_PERMISSION, new PermissionCallback() {
-                @Override
-                public void onPermissionGranted() {
-                    // Permission granted after request
-                }
-
-                @Override
-                public void onPermissionDenied() {
-                    // Permission denied, handle user rejection
-                    Toast.makeText(MainActivity.this, "Storage permission is required to save the results", Toast.LENGTH_SHORT).show();
-                }
-            });
+//Check for camera permissions
+        if (ContextCompat.checkSelfPermission(MainActivity.this, CAMERA) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]
+                            {
+                                    Manifest.permission.CAMERA
+                            }, 100);
         }
 
         //OnClickListener Camera button
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // check for camera permission
-                checkCameraPermissionAndRequest(values);
+                imageUri = getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent, 100);
             }
         });
 
@@ -380,31 +381,6 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
-    private void checkCameraPermissionAndRequest(ContentValues values) {
-        if (!hasPermission(CAMERA)) {
-            requestPermission(CAMERA, MY_CAMERA_PERMISSION_CODE, new PermissionCallback() {
-                @Override
-                public void onPermissionGranted() {
-                    // Permission granted after request
-                    imageUri = getContentResolver().insert(
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                    values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                    values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    startActivityForResult(intent, 100);
-                }
-
-                @Override
-                public void onPermissionDenied() {
-                    // Permission denied, handle user rejection
-                    Toast.makeText(MainActivity.this, "Camera permission is required to take pictures", Toast.LENGTH_SHORT).show();
-                }
-
-            });
-        }
-    }
 
     private void requestPermission(String permission, int requestCode, PermissionCallback callback) {
         ActivityCompat.requestPermissions(MainActivity.this,
@@ -427,6 +403,10 @@ public class MainActivity extends AppCompatActivity  {
             } else {
                 // Permission denied, handle user rejection
                 callback.onPermissionDenied();
+            }
+        } else if(!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+             if (requestCode == MY_CAMERA_PERMISSION_CODE) {
+                Toast.makeText(MainActivity.this, "Camera permission is required to take pictures", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -520,7 +500,7 @@ public class MainActivity extends AppCompatActivity  {
         Context context=this;
         String root =context.getFilesDir().toString();
         //attempting to use local storage!
-        File myDir = new File(root+"/saved_images");
+        File myDir = new File(context.getFilesDir(),"saved_images");
 
         Log.v("ROOT", "The root is:"+root);
         Log.v("PATH", "Full directory path:"+myDir);
@@ -533,7 +513,6 @@ public class MainActivity extends AppCompatActivity  {
         }
         //use dateString for the names
         String fileName= dateString+".jpg";
-        //String fileName=dateString;
         Log.v("NAME", "StoreImage named file: "+fileName);
         File file = new File(myDir, fileName);
         Log.v("FILE", "File made");
@@ -564,7 +543,7 @@ public class MainActivity extends AppCompatActivity  {
 
         Context context=this;
         String root =context.getFilesDir().toString();
-        File myDir = new File(root+"/saved_data");
+        File myDir = new File(context.getFilesDir(),"saved_data");
         //directory is now "root"/saved_data, wherever app file storage is
 
         Log.v("DATA", "File to be saved in: "+myDir);
@@ -654,6 +633,13 @@ public class MainActivity extends AppCompatActivity  {
     //https://stackoverflow.com/questions/41952535/saving-image-from-image-view-into-internal-external-device-storage
     public  boolean isStoragePermissionGranted() {
         if (android.os.Build.VERSION.SDK_INT >= 23) {
+
+            /*
+              Since we are saving in app's internal storage, no permission is required
+             */
+            return true;
+
+            /*
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
                 Log.v("PERM","Permission is granted");
@@ -665,6 +651,7 @@ public class MainActivity extends AppCompatActivity  {
                 //  getActivity() throws an error, commenting this out for now
                 return false;
             }
+            */
         }
         else { //permission is automatically granted on sdk<23 upon installation
             Log.v("PERM","Permission is granted for sdk<23");
