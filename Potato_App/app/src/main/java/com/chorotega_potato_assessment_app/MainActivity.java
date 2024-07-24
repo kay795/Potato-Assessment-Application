@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity  {
                 Bitmap bitmap = Bitmap.createBitmap(drawable.getBitmap());
 
                 String coinType=sharedPreferences.getString("Coin_Type","Quarter");//The settings are pulled on process run
-                String processType=sharedPreferences.getString("Processing_Method", "Normal");
+                String processType=sharedPreferences.getString("Processing_Method", "Machine_Learning");
                 String customSize=sharedPreferences.getString("Custom_Coin", "0");
                 String customPass="Custom_"+customSize;
 
@@ -206,14 +206,13 @@ public class MainActivity extends AppCompatActivity  {
                 Log.v("CUSTOM", "Custom Pass: "+customPass);
                 PyObject pyo;
 
-                if(processType.equals("Normal")){
-                    Log.v("PROCESS", "Running Classic Method");
-                    pyo = py.getModule("potato_project_classic_chqv4");
-
-                }
-                else{
+                if(processType.equals("Machine_Learning")){
                     Log.v("PROCESS", "Running Machine Learning");
                     pyo = py.getModule("potato_project_machine_learning_chqv5");
+                }
+                else{
+                    Log.v("PROCESS", "Running Classic Method");
+                    pyo = py.getModule("potato_project_classic_chqv4");
                 }
 
                 List<PyObject> obj;
