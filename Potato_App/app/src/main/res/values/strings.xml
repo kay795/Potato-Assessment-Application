@@ -26,17 +26,17 @@
     </string-array>
 
     <string-array name="pref_image_processing_type">
-        <item>Standard Image Processing</item>
         <item>Machine Learning</item>
+        <item>Standard Image Processing</item>
     </string-array>
 
     <string-array name="pref_image_processing_type_values">
-        <item>Normal</item>
         <item>Machine_Learning</item>
+        <item>Normal</item>
     </string-array>
 
     <string name="pref_coin_type_default">Quarter</string>
-    <string name="pref_processing_default">Normal</string>
+    <string name="pref_processing_default">Machine_Learning</string>
 
     <string name="pref_coin">Coin_Type</string>
     <string name="pref_coin_title">Reference Object</string>
