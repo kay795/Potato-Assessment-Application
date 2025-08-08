@@ -4,8 +4,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 34
-    buildToolsVersion "34.0.0"
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.chorotega_potato_assessment_app"
