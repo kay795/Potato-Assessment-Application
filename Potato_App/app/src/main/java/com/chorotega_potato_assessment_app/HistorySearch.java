@@ -39,6 +39,7 @@ public class HistorySearch extends AppCompatActivity  {
         layoutManager=new LinearLayoutManager(this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setClipToPadding(false);
 
 
         String root =this.getFilesDir().toString();

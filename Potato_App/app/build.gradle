@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.chorotega_potato_assessment_app"
@@ -30,7 +30,7 @@ android {
             }
         }
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 8
         versionName "1.8"
 
@@ -43,7 +43,7 @@ android {
 
         // give path to python.exe file in system
         python{
-            buildPython "C:/Users/kesevan.veloo/AppData/Local/Programs/Python/Python38/python.exe"
+            buildPython "C:/Users/lochana.marasingha/AppData/Local/Programs/Python/Python38/python.exe"
         }
 
     }
