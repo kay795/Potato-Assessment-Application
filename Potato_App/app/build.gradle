@@ -4,8 +4,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 34
-    buildToolsVersion "34.0.0"
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.chorotega_potato_assessment_app"
@@ -31,9 +30,9 @@ android {
             }
         }
         minSdkVersion 21
-        targetSdkVersion 34
-        versionCode 8
-        versionName "1.8"
+        targetSdkVersion 35
+        versionCode 10
+        versionName "2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -44,7 +43,7 @@ android {
 
         // give path to python.exe file in system
         python{
-            buildPython "C:/Users/kesevan.veloo/AppData/Local/Programs/Python/Python38/python.exe"
+            buildPython "C:/Users/lochana.marasingha/AppData/Local/Programs/Python/Python38/python.exe"
         }
 
     }
@@ -59,17 +58,20 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    namespace 'com.chorotega_potato_assessment_app'
 }
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.preference:preference:1.1.1'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation "androidx.core:core:1.10.1"
+    testImplementation 'junit:junit:4.13.2'
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //This comes from https://medium.com/@bhavyakaria/step-by-step-guide-to-create-app-settings-using-preferences-in-android-part-1-fa470305b530
    // implementation 'androidx.preference:preference:1.0.0'
 
