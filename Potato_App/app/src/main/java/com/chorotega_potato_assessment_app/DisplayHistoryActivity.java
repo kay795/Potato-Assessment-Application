@@ -2,6 +2,7 @@ package com.chorotega_potato_assessment_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.WindowCompat;
 
 import android.graphics.Color;
 import android.net.Uri;
@@ -29,6 +30,7 @@ public class DisplayHistoryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_display_history);
 
         ////////////////////////////////////

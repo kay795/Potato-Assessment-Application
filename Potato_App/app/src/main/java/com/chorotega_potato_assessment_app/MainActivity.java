@@ -47,7 +47,6 @@ import java.util.Map;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -56,9 +55,9 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
 import androidx.preference.PreferenceManager;
 
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.Manifest.permission.CAMERA;
 
 
@@ -89,6 +88,8 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
         setContentView(R.layout.activity_main);
 
         //tool bar is generated in tool_bar.xml and is the bar at the top of both screens
@@ -109,10 +110,7 @@ public class MainActivity extends AppCompatActivity  {
         btn = findViewById(R.id.button);
         iv = findViewById(R.id.imageView);
         iv2 = findViewById(R.id.imageView2);
-        photoButton = (ImageButton)findViewById(R.id.btnCamera);
-//        text1 = findViewById(R.id.num);
-//        text2 = findViewById(R.id.min);
-//        text3 = findViewById(R.id.max);
+        photoButton = findViewById(R.id.btnCamera);
         text4 = findViewById(R.id.avg);
         ContentValues values = new ContentValues();
 
